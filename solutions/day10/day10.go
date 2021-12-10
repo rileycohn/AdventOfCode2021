@@ -3,29 +3,41 @@ package main
 import (
 	"adventOfCode2021/lib"
 	"fmt"
+	"sort"
 )
 
 func main() {
-	fmt.Println("Day 9!")
+	fmt.Println("Day 10!")
 	lines, err := lib.ReadLinesToStringList("/Users/cohriley/Documents/Personal/adventOfCode2021/solutions/day10/day10.txt")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	total := 0
+	var scores []int
 	for _, line := range lines {
-		illegalChar := processRow(line)
-		fmt.Println(illegalChar)
-		total = total + getIllegalCharValue(illegalChar)
+		total := 0
+		autoComplete := processRow(line)
+		// We only care about incomplete rows now
+		if autoComplete != "" {
+			for _, c := range autoComplete {
+				total = total * 5
+				total = total + getAutocompleteCharValue(string(c))
+			}
+
+			scores = append(scores, total)
+		}
 	}
 
-	fmt.Println(total)
+	fmt.Println(scores)
+	// Now sort
+	sort.Ints(scores)
+	fmt.Println(scores[len(scores) / 2])
 }
 
 func processRow(row string) string {
 	// Create a stack to determine if the row is valid
-	stack := []string{}
+	var stack []string
 	for _, char := range row {
 		// Append open chars to the stack
 		if isOpenChar(string(char)) {
@@ -33,8 +45,8 @@ func processRow(row string) string {
 		} else {
 			// If this is a closing char, the top of the stack needs to be its matching open character
 			if len(stack) == 0 || stack[len(stack) - 1] != getMatchingOpenChar(string(char)) {
-				// This is not a match, return it
-				return string(char)
+				// This is not a match, return empty
+				return ""
 			} else {
 				// Slice the stack to "pop" off the stack
 				stack = stack[:len(stack) - 1]
@@ -42,8 +54,14 @@ func processRow(row string) string {
 		}
 	}
 
-	// If we get here, the row is valid
-	return ""
+	// If we get here, the row is valid, just missing some vals, figure those out
+	autoComplete := ""
+	for _, openChar := range stack {
+		autoComplete += getMatchingClosingChar(openChar)
+	}
+
+	// Reverse the order
+	return lib.Reverse(autoComplete)
 }
 
 func isOpenChar(char string) bool {
@@ -65,14 +83,29 @@ func getMatchingOpenChar(char string) string {
 	}
 }
 
-func getIllegalCharValue(char string) int {
-	illegalChar := map[string]int{
+func getMatchingClosingChar(char string) string {
+	switch char {
+	case "(":
+		return ")"
+	case "{":
+		return "}"
+	case "[":
+		return "]"
+	case "<":
+		return ">"
+	default:
+		return ""
+	}
+}
+
+func getAutocompleteCharValue(char string) int {
+	charVal := map[string]int{
 		"": 0,
-		")": 3,
-		"]": 57,
-		"}": 1197,
-		">": 25137,
+		")": 1,
+		"]": 2,
+		"}": 3,
+		">": 4,
 	}
 
-	return illegalChar[char]
+	return charVal[char]
 }
