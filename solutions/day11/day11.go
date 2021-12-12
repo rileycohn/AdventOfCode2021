@@ -30,7 +30,7 @@ func main() {
 
 	// 100 Steps
 	totalFlashes := 0
-	for i :=0; i < 100; i++ {
+	for i :=0; i < 10000; i++ {
 		alreadyFlashed = [10][10]bool{}
 		for row:= 0; row < len(grid); row++ {
 			for col, _ := range grid[row] {
@@ -56,6 +56,11 @@ func main() {
 		}
 
 		totalFlashes = totalFlashes + numFlashes
+
+		if numFlashes == 100 {
+			fmt.Println(i)
+			break
+		}
 		fmt.Println(numFlashes)
 		printGridPretty(grid)
 	}
@@ -72,11 +77,6 @@ func flash(row int, col int){
 
 		newLeft := row + int(left)
 		newRight := col + int(right)
-
-		// look for 3,0
-		if newLeft == 0 && newRight == 3 {
-			fmt.Println("here")
-		}
 
 		if newLeft < 0 || newLeft > 9 || newRight < 0 || newRight > 9 {
 			continue
