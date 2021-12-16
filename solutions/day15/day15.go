@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	fmt.Println("Day 15!")
-	lines, err := lib.ReadLinesToStringList("/Users/cohriley/Documents/Personal/adventOfCode2021/solutions/day15/day15.txt")
+	fmt.Println("Day 16!")
+	lines, err := lib.ReadLinesToStringList("/Users/cohriley/Documents/Personal/adventOfCode2021/solutions/day16/day16.txt")
 	if err != nil {
 		fmt.Println(err)
 		return
